@@ -1,0 +1,6 @@
+# Author-owned WORLDSEED exports should not drift into the software repo.
+*.worldseed.json
+
+# Common local noise
+.DS_Store
+Thumbs.db

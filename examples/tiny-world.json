@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "0.1",
+  "id": "tiny-world",
+  "title": "The Bell at Bracken Cross",
+  "createdAt": "2026-08-24T00:00:00.000Z",
+  "updatedAt": "2026-08-24T00:04:00.000Z",
+  "nodes": [
+    {
+      "id": "claim-before-midnight",
+      "title": "The bell rang before midnight",
+      "body": "Mara's notebook says the abandoned bell at Bracken Cross rang while the last train was still visible.",
+      "kind": "note",
+      "epistemic": "fictional-canon",
+      "stub": false,
+      "createdAt": "2026-08-24T00:01:00.000Z"
+    },
+    {
+      "id": "claim-bell-silent",
+      "title": "The bell could not have rung",
+      "body": "The station ledger says the bell rope had been removed three days earlier.",
+      "kind": "note",
+      "epistemic": "fictional-canon",
+      "stub": false,
+      "createdAt": "2026-08-24T00:02:00.000Z"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-echo",
+      "from": "claim-before-midnight",
+      "to": "claim-bell-silent",
+      "type": "bears-on",
+      "epistemic": "fictional-canon",
+      "note": "Both claims concern the same bell and night.",
+      "createdAt": "2026-08-24T00:03:00.000Z"
+    },
+    {
+      "id": "edge-contradiction",
+      "from": "claim-before-midnight",
+      "to": "claim-bell-silent",
+      "type": "contradicts",
+      "epistemic": "contradiction",
+      "note": "Keep both claims until the story earns an explanation.",
+      "resolution": null,
+      "createdAt": "2026-08-24T00:04:00.000Z"
+    }
+  ],
+  "sources": [
+    {
+      "id": "source-mara-notebook",
+      "nodeId": "claim-before-midnight",
+      "label": "Mara Venn's notebook — fictional specimen",
+      "url": "",
+      "note": "Invented source used only to demonstrate provenance fields.",
+      "createdAt": "2026-08-24T00:03:30.000Z"
+    }
+  ]
+}
