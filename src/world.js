@@ -36,22 +36,36 @@ export function captureNode(world, input = {}) {
   const now = input.now ?? new Date().toISOString();
   const title = cleanText(input.title) || 'Untitled Entry';
   const body = String(input.body ?? '');
+  const kind = cleanText(input.kind) || 'note';
+  const epistemic = cleanText(input.epistemic) || 'unknown';
 
-  const node = {
-    id: input.id ?? makeUniqueId(world.nodes, slug(title) || 'entry'),
-    title,
-    body,
-    kind: cleanText(input.kind) || 'note',
-    epistemic: cleanText(input.epistemic) || 'unknown',
-    stub: false,
-    createdAt: now,
-  };
+  const existingStub = findNodeByTitle(world, title);
+  let node;
 
-  if (world.nodes.some((existing) => existing.id === node.id)) {
-    throw new Error(`Node id already exists: ${node.id}`);
+  if (existingStub?.stub === true) {
+    node = existingStub;
+    node.title = title;
+    node.body = body;
+    node.kind = kind;
+    node.epistemic = epistemic;
+    node.stub = false;
+  } else {
+    node = {
+      id: input.id ?? makeUniqueId(world.nodes, slug(title) || 'entry'),
+      title,
+      body,
+      kind,
+      epistemic,
+      stub: false,
+      createdAt: now,
+    };
+
+    if (world.nodes.some((existing) => existing.id === node.id)) {
+      throw new Error(`Node id already exists: ${node.id}`);
+    }
+
+    world.nodes.push(node);
   }
-
-  world.nodes.push(node);
 
   for (const linkedTitle of extractWikiLinks(body)) {
     let target = findNodeByTitle(world, linkedTitle);
