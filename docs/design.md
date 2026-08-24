@@ -51,6 +51,8 @@ Relations are open-vocabulary strings such as `born-in`, `witnessed`, `opposed`,
 
 Free text may contain `[[Wiki Links]]`. v0.1 extracts these names and preserves them as mention relations while keeping the original prose unchanged. Missing targets may exist as lightweight stubs until the author fills them in.
 
+A stub's first mention establishes its durable address. When the author later captures that named thing directly, WORLDSEED fills the existing stub in place rather than creating a duplicate, so prior links keep pointing to the same world object.
+
 The wiki page is therefore a projection over a graph, not the graph's master ontology.
 
 ## Local-first rule
@@ -101,7 +103,7 @@ The JSON export is intentionally explicit and boring. Future Free Graph/eCODE ad
 
 A valid v0.1 witness can:
 
-1. open `index.html` in a modern browser;
+1. serve the repository as a static site and open it in a modern browser;
 2. create two entries with different epistemic states;
 3. create a typed relation between them;
 4. attach a source to one entry;
@@ -109,4 +111,4 @@ A valid v0.1 witness can:
 6. refresh and recover the same world locally;
 7. wander from one entry to connected material;
 8. export a JSON document containing the authored nodes, edges, and sources;
-9. do all of the above without a network request.
+9. do all of the above without a network request from the application.
