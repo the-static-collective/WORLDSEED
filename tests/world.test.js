@@ -10,6 +10,8 @@ import {
   exportWorld,
   extractWikiLinks,
   getNeighborhood,
+  parseWorld,
+  serializeWorld,
 } from '../src/world.js';
 
 test('createWorld starts with an empty author-owned world document', () => {
@@ -147,6 +149,52 @@ test('exportWorld returns a detached complete world document', () => {
   assert.equal(world.nodes[0].title, 'Ada Vale');
   assert.equal(exported.sources.length, 1);
   assert.equal(exported.schemaVersion, '0.1');
+});
+
+test('serializeWorld and parseWorld round-trip the complete world document', () => {
+  const world = seededTwoNodeWorld();
+  addRelation(world, {
+    id: 'edge-1',
+    from: 'ada',
+    to: 'station',
+    type: 'arrived-at',
+    epistemic: 'fictional-canon',
+    now: '2026-08-24T00:08:00.000Z',
+  });
+  addSource(world, {
+    id: 'source-1',
+    nodeId: 'ada',
+    label: 'Archive note',
+    url: 'https://example.test/archive',
+    now: '2026-08-24T00:09:00.000Z',
+  });
+
+  const restored = parseWorld(serializeWorld(world), {
+    fallbackTitle: 'Fallback',
+    fallbackId: 'fallback-world',
+    now: '2026-08-24T01:00:00.000Z',
+  });
+
+  assert.deepEqual(restored, world);
+});
+
+test('parseWorld returns a fresh world when stored data is malformed or incompatible', () => {
+  const malformed = parseWorld('{ definitely-not-json', {
+    fallbackTitle: 'Recovered World',
+    fallbackId: 'recovered-world',
+    now: '2026-08-24T01:00:00.000Z',
+  });
+  const incompatible = parseWorld(JSON.stringify({ schemaVersion: '99.0' }), {
+    fallbackTitle: 'Recovered World',
+    fallbackId: 'recovered-world-2',
+    now: '2026-08-24T01:01:00.000Z',
+  });
+
+  assert.equal(malformed.title, 'Recovered World');
+  assert.equal(malformed.id, 'recovered-world');
+  assert.deepEqual(malformed.nodes, []);
+  assert.equal(incompatible.id, 'recovered-world-2');
+  assert.deepEqual(incompatible.edges, []);
 });
 
 function seededTwoNodeWorld() {
