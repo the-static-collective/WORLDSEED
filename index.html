@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="WORLDSEED — local-first world memory for writers.">
+  <title>WORLDSEED</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div>
+      <p class="eyebrow">WORLDSEED · local world memory</p>
+      <p class="tagline">A quiet place for a world to exist before you decide how to tell its story.</p>
+    </div>
+    <label class="theme-control" for="theme-select">
+      Appearance
+      <select id="theme-select" aria-label="Appearance">
+        <option value="system">System</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="page-shell">
+    <section class="privacy-note" aria-label="Privacy">
+      <strong>Your world is yours.</strong> The active world stays in this browser unless you export it. WORLDSEED v0.1 has no account, cloud sync, telemetry, or remote AI calls.
+    </section>
+
+    <section class="capture-panel" aria-labelledby="capture-title">
+      <div class="section-heading">
+        <p class="eyebrow">Capture</p>
+        <h1 id="capture-title">What entered the world?</h1>
+        <p>Write naturally. Use <code>[[double brackets]]</code> when one thing touches another thing you want to remember.</p>
+      </div>
+
+      <form id="capture-form" class="capture-form">
+        <label>
+          Name
+          <input id="entry-title" name="title" required maxlength="160" placeholder="A person, place, event, question, scrap…">
+        </label>
+        <div class="form-row">
+          <label>
+            Kind
+            <select id="entry-kind" name="kind">
+              <option value="note">Note</option>
+              <option value="person">Person</option>
+              <option value="place">Place</option>
+              <option value="event">Event</option>
+              <option value="object">Object</option>
+              <option value="institution">Institution</option>
+              <option value="culture">Culture</option>
+              <option value="motif">Motif</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+          <label>
+            What kind of knowing is this?
+            <select id="entry-epistemic" name="epistemic">
+              <option value="unknown">Unknown / not sorted yet</option>
+              <option value="historical-fact">Historical fact</option>
+              <option value="sourced-interpretation">Sourced interpretation</option>
+              <option value="fictional-canon">Fictional canon</option>
+              <option value="possibility">Possibility</option>
+              <option value="contradiction">Contradiction</option>
+            </select>
+          </label>
+        </div>
+        <label>
+          The thought itself
+          <textarea id="entry-body" name="body" rows="7" placeholder="Paste the paragraph. Write the lyric. Record the rumor. Leave the uncertainty intact."></textarea>
+        </label>
+        <div class="form-actions">
+          <button class="primary" type="submit">Capture</button>
+          <p class="microcopy">Nothing here becomes truer because it was captured.</p>
+        </div>
+      </form>
+    </section>
+
+    <section class="world-bar" aria-label="World controls">
+      <label>
+        World name
+        <input id="world-title" maxlength="160" aria-label="World name">
+      </label>
+      <div class="world-actions">
+        <span id="world-counts" class="counts" aria-live="polite"></span>
+        <button id="export-world" class="secondary" type="button">Export World</button>
+      </div>
+    </section>
+
+    <div class="workspace-grid">
+      <section class="panel shelf-panel" aria-labelledby="shelf-title">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Archive</p>
+            <h2 id="shelf-title">World Shelf</h2>
+          </div>
+        </div>
+        <div id="world-shelf" class="shelf" aria-live="polite"></div>
+      </section>
+
+      <section class="panel tools-panel" aria-labelledby="tools-title">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Relationships</p>
+            <h2 id="tools-title">Give the world edges</h2>
+          </div>
+        </div>
+
+        <details open>
+          <summary>Link</summary>
+          <form id="link-form" class="compact-form">
+            <label>From <select id="link-from" required></select></label>
+            <label>Relation <input id="link-type" required maxlength="80" placeholder="possibly-knew"></label>
+            <label>To <select id="link-to" required></select></label>
+            <label>
+              Knowing
+              <select id="link-epistemic">
+                <option value="unknown">Unknown</option>
+                <option value="historical-fact">Historical fact</option>
+                <option value="sourced-interpretation">Sourced interpretation</option>
+                <option value="fictional-canon">Fictional canon</option>
+                <option value="possibility">Possibility</option>
+              </select>
+            </label>
+            <label>Note <textarea id="link-note" rows="3" placeholder="Why does this relation belong here?"></textarea></label>
+            <button type="submit">Link</button>
+          </form>
+        </details>
+
+        <details>
+          <summary>Source</summary>
+          <form id="source-form" class="compact-form">
+            <label>Entry <select id="source-node" required></select></label>
+            <label>Source label <input id="source-label" required maxlength="180" placeholder="City directory, 1891"></label>
+            <label>URL <input id="source-url" type="url" inputmode="url" placeholder="https://…"></label>
+            <label>Note <textarea id="source-note" rows="3" placeholder="What does this source actually support?"></textarea></label>
+            <button type="submit">Source</button>
+          </form>
+        </details>
+
+        <details>
+          <summary>Contradict</summary>
+          <form id="contradict-form" class="compact-form">
+            <label>One entry <select id="contradict-left" required></select></label>
+            <label>The conflicting entry <select id="contradict-right" required></select></label>
+            <label>What does not fit? <textarea id="contradict-note" rows="3" placeholder="Preserve the disagreement; do not solve it yet."></textarea></label>
+            <button type="submit">Contradict</button>
+          </form>
+        </details>
+      </section>
+
+      <section class="panel wander-panel" aria-labelledby="wander-title">
+        <div class="panel-heading wander-heading">
+          <div>
+            <p class="eyebrow">Wander</p>
+            <h2 id="wander-title">Enter somewhere</h2>
+          </div>
+          <select id="wander-focus" aria-label="Choose an entry to wander from"></select>
+        </div>
+        <div id="wander-view" class="wander-view" aria-live="polite"></div>
+      </section>
+    </div>
+
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+  </main>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
