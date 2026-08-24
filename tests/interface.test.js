@@ -19,6 +19,28 @@ test('writer-facing shell exposes the v0.1 verbs and local-only privacy promise'
   for (const phrase of REQUIRED_COPY) {
     assert.match(html, new RegExp(escapeRegExp(phrase), 'i'), `missing interface copy: ${phrase}`);
   }
+
+  assert.match(html, /src\/app\.js/);
+  assert.match(html, /styles\.css/);
+});
+
+test('browser shell persists locally, uses the world domain API, and makes no network fetches', async () => {
+  const app = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+
+  for (const symbol of [
+    'captureNode',
+    'addRelation',
+    'addSource',
+    'addContradiction',
+    'getNeighborhood',
+    'parseWorld',
+    'serializeWorld',
+    'localStorage',
+  ]) {
+    assert.match(app, new RegExp(escapeRegExp(symbol)), `missing app wiring: ${symbol}`);
+  }
+
+  assert.doesNotMatch(app, /\bfetch\s*\(/, 'WORLDSEED v0.1 must not make network fetches');
 });
 
 function escapeRegExp(value) {
