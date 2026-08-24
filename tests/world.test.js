@@ -54,6 +54,36 @@ test('captureNode keeps prose and creates mention edges to lightweight wiki stub
   );
 });
 
+test('capturing a named wiki stub fills that existing address instead of duplicating it', () => {
+  const world = createWorld('World', { id: 'world-1', now: '2026-08-24T00:00:00.000Z' });
+
+  captureNode(world, {
+    id: 'note-1',
+    title: 'Arrival note',
+    body: 'Someone remembers [[Ada Vale]].',
+    kind: 'note',
+    epistemic: 'possibility',
+    now: '2026-08-24T00:01:00.000Z',
+  });
+
+  const stub = world.nodes.find((node) => node.title === 'Ada Vale');
+  const filled = captureNode(world, {
+    title: 'Ada Vale',
+    body: 'Directory-backed person entry.',
+    kind: 'person',
+    epistemic: 'historical-fact',
+    now: '2026-08-24T00:02:00.000Z',
+  });
+
+  assert.equal(filled.id, stub.id);
+  assert.equal(filled.stub, false);
+  assert.equal(filled.kind, 'person');
+  assert.equal(filled.epistemic, 'historical-fact');
+  assert.equal(filled.body, 'Directory-backed person entry.');
+  assert.equal(world.nodes.filter((node) => node.title === 'Ada Vale').length, 1);
+  assert.equal(world.edges.find((edge) => edge.type === 'mentions').to, filled.id);
+});
+
 test('addRelation preserves author-declared open-vocabulary relation and epistemic state', () => {
   const world = seededTwoNodeWorld();
 
