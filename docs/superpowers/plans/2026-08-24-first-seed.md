@@ -1,10 +1,10 @@
 # WORLDSEED v0.1 First Seed Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox syntax for tracking.
 
 **Goal:** Build the smallest local-first WORLDSEED that lets a writer capture, link, source, contradict, wander, persist, and export a world without learning a formal ontology.
 
-**Architecture:** A dependency-free static browser app sits over a pure JavaScript world-document module. The domain module owns schema creation, node/edge/source mutation, wiki-link extraction, neighborhood lookup, and export. A thin DOM layer persists the world in `localStorage` and renders one-page writer controls.
+**Architecture:** A dependency-free static browser app sits over a pure JavaScript world-document module. The domain module owns schema creation, node/edge/source mutation, wiki-link extraction, neighborhood lookup, and export. A DOM adapter persists the world in `localStorage` and renders one-page writer controls.
 
 **Tech Stack:** HTML5, CSS, ECMAScript modules, browser `localStorage`, Node.js built-in test runner, GitHub Actions.
 
@@ -33,29 +33,25 @@
 **Interfaces:**
 - Produces: `createWorld`, `captureNode`, `addRelation`, `addSource`, `addContradiction`, `getNeighborhood`, `extractWikiLinks`, `exportWorld`.
 
-- [ ] **Step 1: Add Node test runner configuration and CI.**
+- [x] **Step 1: Add Node test runner configuration and CI.**
 
 `package.json` uses ESM and `node --test tests/*.test.js`.
 
-- [ ] **Step 2: Write failing domain tests.**
+- [x] **Step 2: Write failing domain tests.**
 
-Tests must prove: world creation; wiki-link extraction; stub creation for `[[links]]`; typed relation preservation; source attachment; contradiction preservation; immediate-neighborhood lookup; deterministic JSON round-trip shape.
+Tests prove: world creation; wiki-link extraction; stub creation for `[[links]]`; typed relation preservation; source attachment; contradiction preservation; immediate-neighborhood lookup; detached export shape.
 
-- [ ] **Step 3: Run tests and verify RED.**
+- [x] **Step 3: Run tests and verify RED.**
 
-Run: `npm test`
+Observed RED: `ERR_MODULE_NOT_FOUND` because `src/world.js` did not yet exist.
 
-Expected: FAIL because `src/world.js` does not yet exist.
+- [x] **Step 4: Implement the minimal pure domain module.**
 
-- [ ] **Step 4: Implement the minimal pure domain module.**
+`src/world.js` exports the domain interfaces and performs no DOM or storage work.
 
-`src/world.js` must export the interfaces above and perform no DOM or storage work.
+- [x] **Step 5: Run tests and verify GREEN.**
 
-- [ ] **Step 5: Run tests and verify GREEN.**
-
-Run: `npm test`
-
-Expected: all domain tests PASS with no warnings.
+Observed GREEN in GitHub Actions.
 
 ### Task 2: Local Persistence Contract
 
@@ -66,17 +62,19 @@ Expected: all domain tests PASS with no warnings.
 **Interfaces:**
 - Produces: `serializeWorld(world): string` and `parseWorld(json): World`.
 
-- [ ] **Step 1: Add failing tests for serialization and malformed input.**
+- [x] **Step 1: Add failing tests for serialization and malformed input.**
 
-A serialized world must round-trip without losing nodes, edges, sources, schema version, or world title. Malformed JSON must return a fresh world rather than throw into the UI.
+A serialized world round-trips without losing nodes, edges, sources, schema version, or world title. Malformed/incompatible JSON returns a fresh world rather than throwing into the UI.
 
-- [ ] **Step 2: Run tests and verify RED.**
+- [x] **Step 2: Run tests and verify RED.**
 
-Expected: FAIL because the serialization helpers do not exist.
+Observed RED: `src/world.js` did not provide `parseWorld`.
 
-- [ ] **Step 3: Implement minimal serialization helpers.**
+- [x] **Step 3: Implement minimal serialization helpers.**
 
-- [ ] **Step 4: Run tests and verify GREEN.**
+- [x] **Step 4: Run tests and verify GREEN.**
+
+Observed GREEN in GitHub Actions.
 
 ### Task 3: Writer-Facing One-Page Shell
 
@@ -90,23 +88,21 @@ Expected: FAIL because the serialization helpers do not exist.
 - Consumes: all Task 1/2 domain functions.
 - Produces: one static page with capture, shelf, relation, source, contradiction, wander, export, and privacy surfaces.
 
-- [ ] **Step 1: Write failing interface smoke tests.**
+- [x] **Step 1: Write failing interface smoke tests.**
 
-The test reads `index.html` and asserts visible copy/control hooks for: `What entered the world?`, `Capture`, `Link`, `Source`, `Contradict`, `Wander`, `Export World`, and the local-only privacy statement.
+The test reads `index.html` and asserts visible copy/control hooks for: `What entered the world?`, `Capture`, `Link`, `Source`, `Contradict`, `Wander`, `Export World`, and the local-only privacy statement. It also checks the browser adapter uses the domain API/localStorage and contains no `fetch()` call.
 
-- [ ] **Step 2: Run tests and verify RED.**
+- [x] **Step 2: Run tests and verify RED.**
 
-Expected: FAIL because `index.html` does not yet exist.
+Observed RED: `index.html` did not yet exist while prior tests remained green.
 
-- [ ] **Step 3: Implement `index.html`, `styles.css`, and thin `src/app.js`.**
+- [x] **Step 3: Implement `index.html`, `styles.css`, and `src/app.js`.**
 
-The app must: load a world from `localStorage`; save after every mutation; render all existing nodes into selectors and shelf; keep the selected node visible in Wander; download export JSON via a Blob URL; never make a network request.
+The app loads a world from `localStorage`; saves after every mutation; renders nodes into selectors and shelf; keeps the selected node visible in Wander; downloads export JSON via a Blob URL; and makes no application network request.
 
-- [ ] **Step 4: Run all tests and verify GREEN.**
+- [x] **Step 4: Run all tests and verify GREEN.**
 
-Run: `npm test`
-
-Expected: all tests PASS.
+Observed GREEN in GitHub Actions.
 
 ### Task 4: Example Witness and Readme Handoff
 
@@ -117,20 +113,30 @@ Expected: all tests PASS.
 **Interfaces:**
 - Produces: a fully fictional example world and exact launch/use instructions.
 
-- [ ] **Step 1: Create a tiny fictional specimen with two nodes, one relation, one source, and one unresolved contradiction.**
+- [x] **Step 1: Create a tiny fictional specimen with two nodes, one relation, one source, and one unresolved contradiction.**
 
-- [ ] **Step 2: Update README with local launch instructions (`python -m http.server` or equivalent static server), constitutional boundary, v0.1 verbs, and privacy/export behavior.**
+- [x] **Step 2: Update README with local launch instructions, constitutional boundary, v0.1 verbs, and privacy/export behavior.**
 
-- [ ] **Step 3: Run `npm test` again.**
+- [x] **Step 3: Run tests again.**
 
-Expected: PASS.
+Observed PASS in GitHub Actions.
 
-### Task 5: Review Gate
+### Task 5: Finish-Gate Regression
 
-**Files:** none
+During whole-slice review, one boundary bug was found: directly capturing a name that already existed as a `[[Wiki Link]]` stub created a second node rather than inhabiting the original address.
 
-- [ ] **Step 1: Open a draft pull request from `worldseed-v0.1-first-seed` to `main`.**
+- [x] Add a failing regression proving a stub must retain identity when filled.
+- [x] Verify RED: expected `stub-ada-vale`, received duplicate `ada-vale`.
+- [x] Repair `captureNode` so first mention establishes the durable address and later direct capture fills it in place.
+- [x] Verify regression GREEN and all prior tests still pass.
 
-- [ ] **Step 2: Inspect the complete diff and CI status.**
+### Task 6: Review Gate
 
-- [ ] **Step 3: Leave the PR draft and unmerged for human review.**
+- [x] **Step 1: Open draft PR #1 from `worldseed-v0.1-first-seed` to `main`.**
+- [x] **Step 2: Inspect the complete diff and CI status.**
+- [x] **Step 3: Reconcile design/PR receipts with the implemented static-server requirement and regression history.**
+- [x] **Step 4: Leave the PR draft and unmerged for human review.**
+
+## Remaining manual witness
+
+A rendered browser smoke on a publicly reachable preview has **not** been claimed. The connected Vercel account has no WORLDSEED project, and the available deployment action is context-free; infrastructure was deliberately left untouched rather than risk deploying the wrong workspace. The runtime also cannot clone GitHub directly for a local browser smoke because outbound DNS is blocked. Source-level interface contracts and CI are verified; visual/browser acceptance remains a human or correctly-scoped preview step.
