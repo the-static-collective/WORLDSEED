@@ -172,6 +172,24 @@ export function exportWorld(world) {
   return JSON.parse(JSON.stringify(world));
 }
 
+export function serializeWorld(world) {
+  assertWorld(world);
+  return JSON.stringify(world, null, 2);
+}
+
+export function parseWorld(json, options = {}) {
+  try {
+    const world = JSON.parse(String(json ?? ''));
+    assertWorld(world);
+    return world;
+  } catch {
+    return createWorld(options.fallbackTitle ?? 'Untitled World', {
+      id: options.fallbackId,
+      now: options.now,
+    });
+  }
+}
+
 function assertWorld(world) {
   if (!world || world.schemaVersion !== SCHEMA_VERSION || !Array.isArray(world.nodes) || !Array.isArray(world.edges) || !Array.isArray(world.sources)) {
     throw new Error('Invalid WORLDSEED world document');
