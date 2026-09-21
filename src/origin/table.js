@@ -25,7 +25,7 @@ function derive(s){
 export function availableTableActions(s){
  if(s?.crossingStatus!=='CROSSED'||s.party?.currentWorldRef!==DEST||!s.crossingReceipt?.receiptId)return [];
  const p=derive(s);
- if(p.held)return [];
+ if(p.held||s.exitOffer)return [];
  if(!p.posture)return ['TAKE_SEAT','STAY_AT_DOOR'];
  if(!p.heard)return ['LISTEN'];
  if(!p.inspected)return ['INSPECT_ADDRESS','LET_IT_REST'];
@@ -75,8 +75,8 @@ export function verifyTableHistory(s){
  const events=tableEvents(s);
  if(!events.length)return;
  required(s);
- let p=clone(s);p.destination.localEvents=p.destination.localEvents.filter(e=>!ROOM_ONLY.includes(e.kind));
- p.destination.localClock=p.destination.localEvents.at(-1)?.at??p.destination.meal.startedAt;
+ let p=clone(s);p.destination.localEvents=p.destination.localEvents.filter(e=>!ROOM_ONLY.includes(e.kind)&&e.kind!=='gate.exit_offered');
+ p.destination.localClock=p.destination.localEvents.at(-1)?.at??p.destination.meal.startedAt;p.exitOffer=null;
  for(const e of events){
    const kind=Object.keys(KINDS).find(k=>KINDS[k]===e.kind);
    const prefix=`${DEST}/table:`;

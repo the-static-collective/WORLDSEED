@@ -1,0 +1,11 @@
+# ORIGIN-FOREIGN-ROOM-EXIT-003 — the source can offer its departure
+
+This is an **isolated synthetic world-adapter specimen**, stacked on ORIGIN-TABLE-002 and ORIGIN-FIRST-CROSSING-001. It does not alter either existing PR. No literal portal, live remote connection, real person's consent, second departure or Grace arrival is claimed.
+
+After the sealed first Crossing, a player can stay at the door or take a seat, listen, inspect the reported Grace address, and select **Request a Foreign Room exit offer**. This is an attributable *visitor request*. FOREIGN ROOM's explicitly declared fictional source policy then issues its own `gate.exit_offered` local event and a bounded `origin.foreign-room-exit-offer.v0.1` receipt. The distinct source receipt references the candidate Gate, the first Crossing, party, unchanged Anchor, and explicit transfer proposal. The proposal carries only human, card, unresolved Thread and reported-origin **references**, not actual bodies, card custody, secret memory, Charge or model grants.
+
+An offer cannot occur before inspection, after `LET_IT_REST`, without the first sealed Crossing, from a non-human party actor, or with a previously used action ID reinterpreted as a different action. A resumed local save validates source-local event integrity, table ordering and the derived exit-offer content; a forged `admitted` field, missing local event or altered party reference fails closed.
+
+The second Gate remains candidate-only. No Grace-owned admission or local consent has occurred; the party remains in FOREIGN ROOM and the first Crossing receipt and STATIC FIELD history remain untouched. Grace's current experimental entry policy may inspect the candidate and transfer proposal and return `HOLD`, but that is not a second Crossing. Genuine next gates: source receipt authenticity under a live adapter, Grace-local host consent, explicit party confirmation, a new source departure, a Grace-local arrival and a separate second Crossing receipt.
+
+Run `npm test` and `node --test tests/origin-exit-offer.test.js tests/origin-second-gate-specimen.test.js`; serve repository root and open `/origin/` to request the fictional exit offer interactively. The portable shape fixture is `examples/origin-foreign-room-exit-003/portable-source-offer.json`. It can be inspected by a separately authored Grace policy but is not a credential.

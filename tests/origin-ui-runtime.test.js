@@ -34,4 +34,10 @@ test('the browser scene dispatches a complete Crossing through the same kernel',
  elements['#actions'].children.find(button=>/Inspect/.test(button.textContent)).click();
  assert.match(elements['#detail'].textContent,/not an invitation/i);
  assert.match(data.get('static-collective:origin-first-crossing-001'),/table.address_inspected/);
+ assert.ok(elements['#actions'].children.some(button=>/Foreign Room exit offer/.test(button.textContent)));
+ elements['#actions'].children.find(button=>/Foreign Room exit offer/.test(button.textContent)).click();
+ assert.match(elements['#detail'].textContent,/Grace has NOT admitted/);
+ assert.match(data.get('static-collective:origin-first-crossing-001'),/gate.exit_offered/);
+ assert.match(data.get('static-collective:origin-first-crossing-001'),/FOREIGN ROOM|foreign-room-seed-001/);
+ assert.equal(elements['#place'].textContent,'FOREIGN ROOM');
 });

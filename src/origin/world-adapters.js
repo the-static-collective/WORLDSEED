@@ -49,3 +49,21 @@ export function recordForeignRoomTableEvent(destination,action,kind,payload){
  result.world.localClock=action.at;
  return result;
 }
+
+// Independent FOREIGN ROOM policy makes an exit offer after a human request.
+// It never grants entry to the destination or emits a departure event.
+export function issueForeignRoomExitOffer(destination,action,gate,scope){
+ if(destination.worldId!=='foreign-room-seed-001')throw new Error('FOREIGN_ROOM_REQUIRED');
+ if(!gate||gate.sourceWorldRef!=='foreign-room-seed-001'||gate.destinationWorldRef!=='full-measure/grace-001'||gate.authorized!==false||gate.status!=='DETECTED')throw new Error('INVALID_GATE_CANDIDATE');
+ if(!destination.localEvents.some(e=>e.kind==='table.address_inspected'&&e.hash===gate.reportedLocalEventRef))throw new Error('ADDRESS_NOT_INSPECTED');
+ if(destination.localEvents.some(e=>e.kind==='table.address_held'))throw new Error('GATE_HELD');
+ if(typeof action.at!=='string'||!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(action.at)||!Number.isFinite(Date.parse(action.at)))throw new Error('INVALID_TIMESTAMP');
+ if(action.at<destination.localClock||action.at<(destination.localEvents.at(-1)?.at??''))throw new Error('LOCAL_TIME_REVERSAL');
+ const result=appendLocal(destination,'gate.exit_offered',`exit:${action.actionId}`,action.at,{
+  actorRef:action.actorRef,gateRef:gate.gateId,reportedLocalEventRef:gate.reportedLocalEventRef,sourceWorldRef:destination.worldId,
+  destinationWorldRef:gate.destinationWorldRef,partyRef:scope.partyRef,anchorRef:scope.anchorRef,priorCrossingRef:scope.priorCrossingRef,bundleRef:scope.bundleId,
+  decision:'OFFERED',admissionGranted:false,sourcePolicy:'foreign-room-seed-001/fictional-fixture-exit-v0.1',
+ });
+ result.world.localClock=action.at;
+ return result;
+}
