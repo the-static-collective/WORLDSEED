@@ -42,3 +42,18 @@ jobs:
         run: |
           node scripts/live-crossing.js --phase arrive --from "${RUNNER_TEMP}/offered" --departed "${RUNNER_TEMP}/departed" --packet "${RUNNER_TEMP}/packet.json" --at 2026-09-21T22:16:00.000Z --out "${RUNNER_TEMP}/arrived.json"
           node --input-type=module -e 'import {readFileSync} from "node:fs"; import assert from "node:assert/strict"; const r=JSON.parse(readFileSync(process.argv[1],"utf8")); assert.equal(r.session.crossingStatus,"CROSSED");assert.equal(r.session.party.currentWorldRef,"foreign-room-seed-001");assert.equal(r.crossingReceipt.sourceDepartureRef,r.session.source.sourceDepartureRef);assert.ok(r.arrivalReceipt.receiptId);' "${RUNNER_TEMP}/arrived.json"
+
+      - name: Real local browser action route -> separately admitted arrival
+        run: |
+          node scripts/browser-path-smoke.js --log "${RUNNER_TEMP}/browser-log.jsonl"
+          cd static-field
+          npm run export:played-porch -- --log "${RUNNER_TEMP}/browser-log.jsonl" --out "${RUNNER_TEMP}/browser-porch"
+          npm run crossing:source -- --phase offer --from "${RUNNER_TEMP}/browser-porch" --out "${RUNNER_TEMP}/browser-offered"
+          cd ..
+          node scripts/live-crossing.js --phase prepare --from "${RUNNER_TEMP}/browser-offered" --out "${RUNNER_TEMP}/browser-prepared.json"
+          node scripts/live-crossing.js --phase confirm --prepared "${RUNNER_TEMP}/browser-prepared.json" --actor human/local-player --confirm --out "${RUNNER_TEMP}/browser-packet.json"
+          cd static-field
+          npm run crossing:source -- --phase depart --from "${RUNNER_TEMP}/browser-offered" --packet "${RUNNER_TEMP}/browser-packet.json" --out "${RUNNER_TEMP}/browser-departed"
+          cd ..
+          node scripts/live-crossing.js --phase arrive --from "${RUNNER_TEMP}/browser-offered" --departed "${RUNNER_TEMP}/browser-departed" --packet "${RUNNER_TEMP}/browser-packet.json" --out "${RUNNER_TEMP}/browser-arrived.json"
+          node --input-type=module -e 'import {readFileSync} from "node:fs";import assert from "node:assert/strict";const r=JSON.parse(readFileSync(process.argv[1],"utf8"));assert.equal(r.session.crossingStatus,"CROSSED");assert.equal(r.session.party.members[0].participantRef,"human/local-player");assert.equal(r.crossingReceipt.sourceDepartureRef,r.session.source.sourceDepartureRef);' "${RUNNER_TEMP}/browser-arrived.json"
