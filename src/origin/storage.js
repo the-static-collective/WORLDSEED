@@ -1,6 +1,7 @@
 import {clone,hashRecord,assertUnique,canonical} from './identity.js';
 import {verifyLocalEvents} from './world-adapters.js';
 import {buildCrossingReceipt} from './engine.js';
+import {verifyTableHistory} from './table.js';
 export function serializeOriginSession(session){return JSON.stringify({schemaVersion:'origin/0.1',session},null,2);}
 export function parseOriginSession(raw){
  let envelope;try{envelope=JSON.parse(raw)}catch{throw new Error('ORIGIN_PARSE_ERROR')}
@@ -12,6 +13,7 @@ export function parseOriginSession(raw){
   const expected=buildCrossingReceipt(s);
   if(canonical(s.crossingReceipt)!==canonical(expected)||s.worldline.at(-1)?.crossingRef!==expected.receiptId||s.source.localEvents.filter(e=>e.kind==='porch.departed').length!==1||s.destination.localEvents.filter(e=>e.kind==='party.arrived').length!==1)throw new Error('ORIGIN_CROSSING_INTEGRITY');
  }
+ verifyTableHistory(s);
  if(s.crossingStatus==='FAILED'&&s.arrival)throw new Error('ORIGIN_FAILED_ARRIVAL_INTEGRITY');
  return clone(s);
 }
