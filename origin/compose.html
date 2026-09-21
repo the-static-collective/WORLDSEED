@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>THE PORCH / COMPOSITION DESK</title>
+<style>
+:root{color-scheme:dark;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#100f0d;color:#e8e0d4}
+*{box-sizing:border-box}body{margin:0}
+main{max-width:980px;margin:auto;padding:clamp(18px,5vw,64px) 20px}
+header{display:flex;justify-content:space-between;align-items:start;gap:15px;border-bottom:1px solid #534c43;padding-bottom:22px}
+.eyebrow{letter-spacing:.19em;text-transform:uppercase;color:#bb9e79;font-size:.76rem}
+h1{font-size:clamp(2.5rem,8vw,6rem);line-height:.95;font-weight:400;letter-spacing:-.065em;margin:18px 0}
+.lede{max-width:560px;color:#bfb6aa;line-height:1.6}a{color:#f1ca8f}
+.pill{border:1px solid #7d6650;border-radius:99px;padding:6px 12px;font-size:.72rem;white-space:nowrap}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:38px}
+.panel{border:1px solid #514a41;padding:22px;min-height:235px;background:#181613}
+.panel h2{font-size:1rem;letter-spacing:.09em;font-weight:500}
+.subtle{color:#a89f93;font-size:.83rem;line-height:1.55}
+.step{color:#bb9e79;font-size:.76rem;letter-spacing:.14em}
+input[type=file]{max-width:100%;margin:24px 0;display:block}
+button{background:#e8e0d4;color:#17130f;border:1px solid #e8e0d4;padding:12px 15px;font:inherit;cursor:pointer}
+button:disabled{opacity:.45;cursor:default}
+#result[hidden]{display:none}
+#outcome{font-size:clamp(1.5rem,3vw,2.4rem);line-height:1.15;margin:15px 0}
+#reason{word-break:break-word}
+dl{display:grid;grid-template-columns:max-content 1fr;gap:9px 14px;font-size:.82rem}
+dt{color:#aa9f90}dd{margin:0;overflow-wrap:anywhere}
+footer{margin-top:38px;padding-top:15px;border-top:1px solid #514a41;color:#b3a797;font-size:.78rem;line-height:1.6}
+@media(max-width:700px){header{display:block}.pill{display:inline-block}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<header><div><p class="eyebrow">STATIC FIELD × WORLDSEED / COMPOSITION-003</p><h1>THE PORCH<br>HOLDS THE DOOR.</h1>
+<p class="lede">Bring a First Bell play to the threshold. This desk reads the Porch's own receipts and shows what is eligible for review. It does not move a party, open a Gate, or tell the next world what to admit.</p></div><span class="pill">READ-ONLY / LOCAL</span></header>
+<div class="grid">
+<section class="panel"><span class="step">01 / SOURCE</span><h2>Bring the Porch's exported history</h2>
+<p class="subtle">Choose the <code>history.jsonl</code> and JSON receipt files from <code>npm run demo:first-bell</code> in STATIC FIELD's feature branch. Selection stays in this browser; nothing is uploaded.</p>
+<label for="files">Select history and receipts</label>
+<input id="files" type="file" multiple accept=".json,.jsonl,application/json">
+<button id="inspect" disabled>Inspect the threshold</button>
+<p id="count" class="subtle" role="status">No files chosen.</p></section>
+<section class="panel" id="result" hidden><span class="step">02 / RECEIPT</span><h2 id="outcome">—</h2>
+<p class="subtle" id="reason"></p><dl>
+<dt>First Bell</dt><dd id="play-ref">—</dd>
+<dt>Bell source</dt><dd>Unresolved</dd>
+<dt>Worldseed</dt><dd>NOT ADMITTED</dd>
+<dt>Party</dt><dd>NOT TRANSFERRED</dd></dl>
+<button id="save" disabled>Save review candidate</button></section>
+<section class="panel" id="default-panel"><span class="step">02 / DECISION</span><h2>A candidate is not a crossing.</h2>
+<p class="subtle">The open corner may be noticed, missed, or deliberately left unresolved. A valid missed clue stays held. Even a verified candidate requires source-owned OPEN/departure, destination-owned admission and human confirmation.</p></section>
+</div>
+<p class="subtle" id="error" role="alert"></p>
+<footer><a href="./">Open the separate synthetic Crossing demo</a> — this demo does <strong>not</strong> import your reviewed candidate. The source history remains at the Porch; the destination keeps its own law.</footer>
+</main><script type="module" src="./compose-app.js"></script>
+</body></html>
