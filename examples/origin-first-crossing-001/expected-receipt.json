@@ -1,0 +1,50 @@
+{
+  "receiptType": "FirstCrossingReceipt",
+  "schema": "origin.crossing.v0.1",
+  "crossingId": "crossing:screen-door-001",
+  "partyRef": "fixture:party-1",
+  "anchorRef": "card:first-inheritance",
+  "gateRef": "SCREEN-DOOR-001",
+  "sourceGateRef": "fixture:derived-static-field-gate",
+  "sourceWorldRef": "static-field/worldseed-001",
+  "destinationWorldRef": "foreign-room-seed-001",
+  "sourcePlayReceiptRef": "fixture:static-field/first-bell-play-001",
+  "gateDetectionReceiptRef": "sha256:db168780db9705dfc8534a369ade3628aa4018f63a90ceaf248993282ccedf4f",
+  "gateOfferReceiptRef": "sha256:39f686672f814ae016cecc88d7fb3c7c79578b46d95e53df811063761ab2c8d4",
+  "destinationAdmissionReceiptRef": "sha256:aedcaa8fdeef902ac72547c091e5bd08a9ff4b90a6091897d1af021fe396b3b6",
+  "partyConfirmationReceiptRef": "sha256:f100124dc1b8f5ac29ffd208646a4a83f625888e615b02eb3b4e3ea5dbb08ab2",
+  "sourceDepartureReceiptRef": "sha256:9ef056737cb58cb921d1514a4a7a940c7af395bc636a543bfa9b44d5ce583ceb",
+  "destinationArrivalReceiptRef": "sha256:f4e41e79f4e105a2978c08974f9704ca6c75cb9d8544461e4d5de01e17e3087d",
+  "transferBundleRef": "sha256:ce7551f7867b3d14cf72020a24d144d824579b8c99746696bc6104542758c00d",
+  "admittedItemRefs": [
+    "human:fixture:human-1",
+    "card:first-inheritance",
+    "thread:bell-unresolved"
+  ],
+  "refusedItemRefs": [
+    "static-field:charge"
+  ],
+  "heldItemRefs": [
+    "static-field:resonance-interpretation"
+  ],
+  "transformedItemRefs": [
+    "static-field:porch"
+  ],
+  "withheldItemRefs": [
+    "private:memory",
+    "model:local-grant"
+  ],
+  "unresolvedRefs": [
+    "thread:bell-unresolved",
+    "source:knock-unresolved"
+  ],
+  "inputProvenance": "synthetic-specimen",
+  "nonClaims": [
+    "does_not_resolve_bell_cause",
+    "does_not_prove_supernatural_cause",
+    "no_local_authority_transfer",
+    "not_a_live_static_field_receipt",
+    "not_a_real_world_or_person_judgment"
+  ],
+  "receiptId": "sha256:8e7fd8aa06d236ae3af8c58c5ad68ad86ad460ce83fa186abeaec0ad5e2c4b6a"
+}

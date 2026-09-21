@@ -60,3 +60,11 @@ Implementation plan: `docs/superpowers/plans/2026-08-24-first-seed.md`
 ## Not in v0.1
 
 No AI co-authoring, automatic canon decisions, global ontology, accounts, collaboration server, semantic search, graph visualization, timeline generation, or map generation. Those may be explored later only if they preserve the author-first boundary.
+
+## ORIGIN-FIRST-CROSSING-001 — separate fictional specimen
+
+ORIGIN is a separate, local-first crossing experiment under `origin/` and `src/origin/`. Its source input is a **synthetic** First Bell fixture compatible with the STATIC FIELD PR #1 receipt shape; it does not read or certify a live STATIC FIELD player's history. FOREIGN ROOM is a neutral destination fixture, not Grace/HOME.
+
+Run `npm test` and `npm run demo:origin`. To play the separate browser scene, serve this repository root with `python3 -m http.server 8000 --bind 127.0.0.1` and open `http://127.0.0.1:8000/origin/`. The Origin scene uses its own localStorage key and does not change this writer-facing notebook or its world documents.
+
+The fixture proves Gate detection, locally chosen OPEN, destination-owned mixed admission, explicit human confirmation, separate source departure/destination arrival, bounded receipt, failed-arrival recovery, and unresolved Bell continuity. Live donor adapters require separately reviewed authority and consent. See `docs/protocol/origin-first-crossing-001.md`.

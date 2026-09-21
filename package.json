@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/*.test.js"
+    "test": "node --test tests/*.test.js",
+    "demo:origin": "node scripts/origin-first-crossing-001.js"
   },
   "engines": {
     "node": ">=20"

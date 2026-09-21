@@ -1,0 +1,12 @@
+import {runFirstCrossingFixture} from '../src/origin/specimen.js';
+const {session,receipt,actionTrace}=runFirstCrossingFixture();
+console.log('ORIGIN-FIRST-CROSSING-001 // FICTIONAL SPECIMEN');
+for(const row of actionTrace)console.log(`${row.kind} -> ${row.status}`);
+console.log(`source: ${session.source.worldId} (Bell: ${session.source.bell.sourceStatus})`);
+console.log(`destination: ${session.destination.worldId} (meal: ${session.destination.meal.status})`);
+console.log(`anchor: ${session.party.anchorRef}`);
+console.log(`admitted: ${receipt.admittedItemRefs.join(', ')}`);
+console.log(`refused: ${receipt.refusedItemRefs.join(', ')}`);
+console.log(`held: ${receipt.heldItemRefs.join(', ')}`);
+console.log(`transformed: ${receipt.transformedItemRefs.join(', ')}`);
+console.log(`receipt: ${receipt.receiptId}`);
