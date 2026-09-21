@@ -20,6 +20,8 @@ jobs:
       - name: Verify both independent kernels
         run: |
           npm test
+          node --check origin/live-room.js
+          node --check src/origin/live-play-carrier.js
           cd static-field
           npm install --no-audit --no-fund
           npm run typecheck
@@ -40,7 +42,7 @@ jobs:
           npm run crossing:source -- --phase depart --from "${RUNNER_TEMP}/offered" --packet "${RUNNER_TEMP}/packet.json" --out "${RUNNER_TEMP}/departed" --at 2026-09-21T22:15:00.000Z
       - name: Destination-owned arrival and first real-history Crossing
         run: |
-          node scripts/live-crossing.js --phase arrive --from "${RUNNER_TEMP}/offered" --departed "${RUNNER_TEMP}/departed" --packet "${RUNNER_TEMP}/packet.json" --at 2026-09-21T22:16:00.000Z --out "${RUNNER_TEMP}/arrived.json"
+          node scripts/live-crossing.js --phase arrive --from "${RUNNER_TEMP}/offered" --departed "${RUNNER_TEMP}/departed" --packet "${RUNNER_TEMP}/packet.json" --at 2026-09-21T22:16:00.000Z --out "${RUNNER_TEMP}/arrived.json" --carrier "${RUNNER_TEMP}/play-carrier.json"
           node --input-type=module -e 'import {readFileSync} from "node:fs"; import assert from "node:assert/strict"; const r=JSON.parse(readFileSync(process.argv[1],"utf8")); assert.equal(r.session.crossingStatus,"CROSSED");assert.equal(r.session.party.currentWorldRef,"foreign-room-seed-001");assert.equal(r.crossingReceipt.sourceDepartureRef,r.session.source.sourceDepartureRef);assert.ok(r.arrivalReceipt.receiptId);' "${RUNNER_TEMP}/arrived.json"
 
       - name: Real local browser action route -> separately admitted arrival
@@ -55,5 +57,9 @@ jobs:
           cd static-field
           npm run crossing:source -- --phase depart --from "${RUNNER_TEMP}/browser-offered" --packet "${RUNNER_TEMP}/browser-packet.json" --out "${RUNNER_TEMP}/browser-departed"
           cd ..
-          node scripts/live-crossing.js --phase arrive --from "${RUNNER_TEMP}/browser-offered" --departed "${RUNNER_TEMP}/browser-departed" --packet "${RUNNER_TEMP}/browser-packet.json" --out "${RUNNER_TEMP}/browser-arrived.json"
+          node scripts/live-crossing.js --phase arrive --from "${RUNNER_TEMP}/browser-offered" --departed "${RUNNER_TEMP}/browser-departed" --packet "${RUNNER_TEMP}/browser-packet.json" --out "${RUNNER_TEMP}/browser-arrived.json" --carrier "${RUNNER_TEMP}/browser-carrier.json"
           node --input-type=module -e 'import {readFileSync} from "node:fs";import assert from "node:assert/strict";const r=JSON.parse(readFileSync(process.argv[1],"utf8"));assert.equal(r.session.crossingStatus,"CROSSED");assert.equal(r.session.party.members[0].participantRef,"human/local-player");assert.equal(r.crossingReceipt.sourceDepartureRef,r.session.source.sourceDepartureRef);' "${RUNNER_TEMP}/browser-arrived.json"
+      - name: Reopen portable native play carriers and execute both table routes
+        run: |
+          node --input-type=module -e 'import {readFileSync} from "node:fs";import assert from "node:assert/strict";import {verifyLivePlayCarrier,chooseLivePlay} from "./src/origin/live-play-carrier.js";const file=JSON.parse(readFileSync(process.argv[1],"utf8"));const opened=verifyLivePlayCarrier(file);assert.equal(opened.table.status,"UNSTARTED");const seated=chooseLivePlay(file,"TAKE_SEAT","2026-09-21T22:17:00.000Z");const listened=chooseLivePlay(seated.carrier,"LISTEN","2026-09-21T22:18:00.000Z");assert.equal(verifyLivePlayCarrier(JSON.parse(JSON.stringify(listened.carrier))).table.status,"ADDRESS_REPORTED");' "${RUNNER_TEMP}/play-carrier.json"
+          node --input-type=module -e 'import {readFileSync} from "node:fs";import assert from "node:assert/strict";import {verifyLivePlayCarrier,chooseLivePlay} from "./src/origin/live-play-carrier.js";const file=JSON.parse(readFileSync(process.argv[1],"utf8"));const opened=verifyLivePlayCarrier(file);const d=new Date(Date.parse(opened.session.destination.localClock)+1000).toISOString();const standing=chooseLivePlay(file,"STAY_AT_DOOR",d);assert.equal(standing.table.posture,"door");assert.equal(standing.session.party.currentWorldRef,"foreign-room-seed-001");' "${RUNNER_TEMP}/browser-carrier.json"
