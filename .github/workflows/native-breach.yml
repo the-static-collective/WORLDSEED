@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: the-static-collective/static-field
-          ref: 2c2b8e0ba5c5bb5264a7affba910746e493334b1
+          ref: caf228888859ed522f9467af01f038c75a53e48e
           path: static-field
       - name: Verify both independent kernels
         run: |
