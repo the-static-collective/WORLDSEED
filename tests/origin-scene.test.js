@@ -23,3 +23,16 @@ test('scene presents deliberate human confirmation and unknown Bell cause',async
  assert.match(app,/FOREIGN ROOM/);
  assert.match(app,/You are late to something/);
 });
+
+test('story-first scene offers distinct chapters and a closed optional field notebook',async()=>{
+ const html=await readFile(new URL('../origin/index.html',import.meta.url),'utf8');
+ const css=await readFile(new URL('../origin/styles.css',import.meta.url),'utf8');
+ for(const id of ['stage','chapter','moment','choicePrompt','choiceHint','keepsakes','inventory'])assert.match(html,new RegExp(`id="${id}"`));
+ assert.match(html,/<details\s+class="ledger"/);
+ assert.doesNotMatch(html,/<details[^>]*\sopen(?:\s|>|=)/);
+ assert.match(html,/aria-live="polite"/);
+ assert.match(html,/FICTIONAL SPECIMEN/);
+ assert.match(css,/@media\s*\(prefers-reduced-motion:\s*reduce\)/);
+ assert.match(css,/@media\s*\(max-width:\s*700px\)/);
+ assert.match(css,/min-height:\s*56px/);
+});

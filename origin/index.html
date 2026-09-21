@@ -1,6 +1,59 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ORIGIN // The First Crossing</title><link rel="stylesheet" href="./styles.css"><script type="module" src="./app.js"></script></head>
-<body><main class="scene"><header><p class="eyebrow">ORIGIN · FICTIONAL SPECIMEN · FIRST CROSSING 001</p><h1 id="place">THE PORCH</h1><p class="lead" id="scene">The screen door rests in its frame. Three knocks. Somewhere behind the evening: a Bell, source unresolved.</p></header>
-<section class="surface" aria-label="Story"><div class="drawing" aria-hidden="true"><div class="door"><div class="screen"></div><div class="handle"></div></div><div class="chair">▥</div></div><p id="detail" class="detail">The chair remains where it was set. The Bell has not explained itself.</p></section>
-<section class="panel"><h2>What can you do?</h2><div id="actions" class="actions"></div><p id="error" role="alert"></p></section>
-<details><summary>Carried particulars &amp; receipts</summary><div id="inventory"></div></details><p class="fine">Fixed fictional crossing fixture. No live STATIC FIELD receipt, person, or world is being evaluated. Worlds retain their own authority.</p></main></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#111b21">
+  <meta name="description" content="A fictional, local-first crossing between two independently living worlds.">
+  <title>ORIGIN // The First Crossing</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <main class="game">
+    <header class="masthead">
+      <div class="mark" aria-hidden="true"><span class="mark-corner"></span><span class="mark-line"></span></div>
+      <div class="masthead-title"><p class="eyebrow">THE STATIC COLLECTIVE / ORIGIN</p><p class="series">THE FIRST CROSSING</p></div>
+      <span class="specimen">FICTIONAL SPECIMEN</span>
+    </header>
+
+    <div class="chapter-rail" aria-label="Story chapter">
+      <p id="chapter" class="chapter">01 / THE KNOCK</p>
+      <p id="moment" class="moment">The evening holds its breath.</p>
+    </div>
+
+    <section id="stage" class="stage mood-porch" aria-label="Current story scene">
+      <div class="illustration" aria-hidden="true">
+        <div class="stars"><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="halo"></div>
+        <div class="scene-door"><div class="scene-mesh"></div><div class="door-handle"></div><div class="door-shine"></div></div>
+        <div class="chair"><i></i></div>
+        <div class="table"><div class="table-top"><div class="plate"><i></i></div><div class="cup"></div></div><div class="table-legs"></div></div>
+        <div class="floor"></div>
+        <div class="art-caption"><span class="art-signal"></span><span id="artLabel">THE SCREEN DOOR</span></div>
+      </div>
+
+      <div class="story">
+        <p class="scene-label"><span class="little-square" aria-hidden="true"></span> YOU ARE HERE</p>
+        <h1 id="place">THE PORCH</h1>
+        <p id="scene" class="lead" aria-live="polite">The screen door rests in its frame. Three knocks. Somewhere behind the evening: a Bell, source unresolved.</p>
+        <p id="detail" class="detail">The chair remains where it was set. The Bell has not explained itself.</p>
+        <div id="keepsakes" class="keepsakes" aria-label="What you still carry">Bell: unanswered · Your party: together</div>
+      </div>
+    </section>
+
+    <section class="choice-panel" aria-label="Your next move">
+      <div class="choice-heading"><p class="eyebrow choice-eyebrow">YOUR MOVE</p><h2 id="choicePrompt">What do you notice?</h2><p id="choiceHint" class="choice-hint">The story advances when you choose.</p></div>
+      <div id="actions" class="actions"></div>
+      <p id="error" class="error" role="alert"></p>
+    </section>
+
+    <details class="ledger">
+      <summary><span class="ledger-title">Field notebook</span><span class="ledger-subtitle">Your carried threads, local rules &amp; receipts</span><span class="ledger-chevron" aria-hidden="true">⌄</span></summary>
+      <p class="ledger-intro">The story stays up front. The proof remains here when you want to inspect it. A card reference is not physical custody, and a reported address is not permission to enter.</p>
+      <pre id="inventory"></pre>
+    </details>
+    <footer class="fine">Fixed fictional crossing fixture. No live STATIC FIELD receipt, person, or world is being evaluated. Each world keeps its own rules and authority.</footer>
+  </main>
+</body>
+</html>
