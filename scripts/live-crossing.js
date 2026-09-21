@@ -5,7 +5,7 @@ import {prepareNativeCrossing,confirmNativeCrossing,arriveNativeCrossing} from '
 
 const args=process.argv.slice(2);
 const option=name=>{const at=args.indexOf(name);return at>=0?args[at+1]:null;};
-const phase=option('--phase'),out=option('--out');
+const phase=option('--phase'),out=option('--out'),carrierOut=option('--carrier');
 const fail=message=>{throw new Error(message)};
 const readJson=async path=>JSON.parse(await readFile(resolve(path),'utf8'));
 const readSource=async dir=>{
@@ -17,7 +17,7 @@ const readSource=async dir=>{
  return {history,receipts};
 };
 if(!out||!['prepare','confirm','arrive'].includes(phase))fail('Usage: --phase prepare|confirm|arrive --out FILE [--from SOURCE_DIR] [--prepared FILE] [--packet FILE] [--departed DIR] [--actor HUMAN_ID] [--confirm] [--at ISO]');
-let result;
+let result,carrierInputs=null;
 if(phase==='prepare'){
  const {history,receipts}=await readSource(option('--from'));
  const offerReceipt=await readJson(join(option('--from'),'source-offer.json'));
@@ -31,9 +31,19 @@ if(phase==='prepare'){
  const packet=await readJson(option('--packet')??fail('PACKET_FILE_REQUIRED'));
  const offerReceipt=await readJson(join(option('--from'),'source-offer.json'));
  const departureReceipt=await readJson(join(option('--departed'),'source-departure.json'));
- result=arriveNativeCrossing({offeredHistory:source.history,departedHistory:departed.history,receipts:source.receipts,
-  offerReceipt,packet,departureReceipt,at:option('--at')??new Date().toISOString()});
+ const at=option('--at')??new Date().toISOString();
+ const inputs={offeredHistory:source.history,departedHistory:departed.history,receipts:source.receipts,offerReceipt,packet,departureReceipt,at};
+ result=arriveNativeCrossing(inputs);
+ if(carrierOut)carrierInputs=inputs;
 }
 await mkdir(dirname(resolve(out)),{recursive:true});
 await writeFile(resolve(out),JSON.stringify(result,null,2)+'\n','utf8');
+if(carrierOut){
+ if(phase!=='arrive'||!carrierInputs)fail('CARRIER_REQUIRES_ARRIVAL');
+ const {buildLivePlayCarrier}=await import('../src/origin/live-play-carrier.js');
+ const carrier=buildLivePlayCarrier(carrierInputs);
+ await mkdir(dirname(resolve(carrierOut)),{recursive:true});
+ await writeFile(resolve(carrierOut),JSON.stringify(carrier,null,2)+'\n','utf8');
+ console.log(`play carrier: ${carrierOut}`);
+}
 console.log(`${phase}: ${result.crossingReceipt?.receiptId??result.confirmation?.receiptId??result.admission?.receiptId} -> ${out}`);
