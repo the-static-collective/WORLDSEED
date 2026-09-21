@@ -37,3 +37,15 @@ export function verifyLocalEvents(world){
  assertUnique(world.localEvents);
  for(const e of world.localEvents){const {hash,...body}=e;if(e.sourceSystem!==world.worldId||hash!==hashRecord('origin-local-event-v01',body))throw new Error('LOCAL_EVENT_INTEGRITY');}
 }
+
+// FOREIGN ROOM owns its own post-arrival occurrences. Origin may request an
+// action, but it cannot append an occurrence to STATIC FIELD on the Room's behalf.
+export function recordForeignRoomTableEvent(destination,action,kind,payload){
+ if(destination.worldId!=='foreign-room-seed-001')throw new Error('FOREIGN_ROOM_REQUIRED');
+ if(!/^table\.(seat_taken|door_held|listened|address_inspected|address_held)$/.test(kind))throw new Error('UNSUPPORTED_LOCAL_ACTION');
+ if(typeof action.at!=='string'||!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(action.at)||!Number.isFinite(Date.parse(action.at)))throw new Error('INVALID_TIMESTAMP');
+ if(action.at<destination.localClock||action.at<(destination.localEvents.at(-1)?.at??''))throw new Error('LOCAL_TIME_REVERSAL');
+ const result=appendLocal(destination,kind,`table:${action.actionId}`,action.at,{...clone(payload),actorRef:action.actorRef});
+ result.world.localClock=action.at;
+ return result;
+}

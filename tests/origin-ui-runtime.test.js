@@ -26,4 +26,12 @@ test('the browser scene dispatches a complete Crossing through the same kernel',
  const raw=data.get('static-collective:origin-first-crossing-001');
  assert.match(raw,/"crossingStatus": "CROSSED"/);
  assert.match(raw,/does_not_resolve_bell_cause/);
+ assert.ok(elements['#actions'].children.some(button=>/Stay at the door/.test(button.textContent)));
+ elements['#actions'].children.find(button=>/Stay at the door/.test(button.textContent)).click();
+ assert.match(elements['#scene'].textContent,/door/i);
+ elements['#actions'].children.find(button=>/Listen/.test(button.textContent)).click();
+ assert.match(elements['#detail'].textContent,/reported|another house/i);
+ elements['#actions'].children.find(button=>/Inspect/.test(button.textContent)).click();
+ assert.match(elements['#detail'].textContent,/not an invitation/i);
+ assert.match(data.get('static-collective:origin-first-crossing-001'),/table.address_inspected/);
 });
