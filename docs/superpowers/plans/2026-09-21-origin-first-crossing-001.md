@@ -6,7 +6,7 @@
 
 **Architecture:** Add an independent dependency-free Origin subsystem under src/origin; leave WORLDSEED's existing author-notebook domain, storage key, and writer interface unchanged. Source and destination are small, explicitly fictional world adapters with separate append-only local histories; a container coordinator stores only Crossings, party location and manifest references, not world state. Supply a fixture-only command-line specimen and a separate local browser scene, each using the same deterministic action engine. The STATIC FIELD adapter starts from an explicitly synthetic FirstBell fixture, not an invented claim that the still-design-stage STATIC FIELD runtime has emitted a verified live receipt.
 
-**Tech Stack:** Existing WORLDSEED ESM JavaScript, Node >=20, node:test, node:assert, node:crypto for hashes; plain HTML/CSS/browser JS for a standalone offline scene; zero new dependencies, no server, no network requests.
+**Tech Stack:** Existing WORLDSEED ESM JavaScript, Node >=20, node:test and node:assert; portable synchronous SHA-256 in pure ESM verified against node:crypto in tests so the identical kernel runs in Node and the browser; plain HTML/CSS/browser JS for a standalone offline scene; zero new dependencies, no server, no network requests.
 
 **Spec:** docs/superpowers/specs/2026-09-21-origin-container-001-design.md
 
@@ -46,7 +46,7 @@ src/world.js, src/app.js, index.html, styles.css
   EXISTING WORLDSEED writer-facing surface. Do not modify.
 
 src/origin/identity.js
-  Deterministic canonical hashes and fixture IDs.
+  Browser-compatible deterministic canonical SHA-256 hashes and fixture IDs.
 
 src/origin/contracts.js
   World, Gate, Party, TransferBundle and event validation.
@@ -70,7 +70,7 @@ src/origin/storage.js
   Origin-only serialize/parse with versioning and no implicit reset.
 
 src/origin/specimen.js
-  Deterministic first-crossing script using the same engine.
+  Deterministic first-crossing script using the same engine (created in Task 9, never imported by earlier tasks).
 
 origin/index.html, origin/app.js, origin/styles.css
   Separate browser scene. No shared WORLDSEED author-storage key.
@@ -136,7 +136,7 @@ test('a model-session participant cannot masquerade as a human', () => {
 ~~~
 
 - [ ] **Step 2: Run RED.** Run node --test tests/origin-identity.test.js. Expected: missing Origin modules.
-- [ ] **Step 3: Implement canonical JSON with sorted keys, ordered arrays, finite numbers and UTF-8 SHA-256.** Reject unsupported values and duplicate/blank record IDs; include namespace in digest input. validateParty requires a non-empty Anchor, at least one human member, unique members and typed model sessionRef/roleRef/contextReceiptRefs. validateGate permits unknown destination but rejects an authorized DETECTED state. validateWorldManifest must retain constitutionRef and policies. validateTransferBundle rejects duplicate item refs and unsupported transfer modes.
+- [ ] **Step 3: Implement canonical JSON with sorted keys, ordered arrays, finite numbers and synchronous UTF-8 SHA-256 in pure ESM.** Do not import node:crypto in production src/origin code: the same module runs in the browser. Verify standard SHA-256 vectors (empty input and abc) and compare against node:crypto's createHash('sha256') in tests. Reject unsupported values and duplicate/blank record IDs; include namespace in digest input. validateParty requires a non-empty Anchor, at least one human member, unique members and typed model sessionRef/roleRef/contextReceiptRefs. validateGate permits unknown destination but rejects an authorized DETECTED state. validateWorldManifest must retain constitutionRef and policies. validateTransferBundle rejects duplicate item refs and unsupported transfer modes.
 - [ ] **Step 4: Run GREEN and existing regression.** Run node --test tests/origin-identity.test.js && npm test. Expected: both pass; no writer-test changes.
 - [ ] **Step 5: Commit.** Stage only the files named above; message: feat(origin): define canonical crossing contracts.
 
@@ -225,9 +225,14 @@ test('no OPEN before detection and no automatic gate authority', () => {
 ~~~js
 test('Foreign Room decides each item without copying the player blob', () => {
   const f = createFirstCrossingFixture();
-  const offer = makeOfferedFixture(f);
-  const result = evaluateForeignRoomAdmission(f.destination, offer, f.transferBundle);
-  const items = projectAdmittedTransfer(f.transferBundle, result);
+  const detection = detectScreenDoor(f.source, f.party);
+  const offer = openScreenDoor(f.source, f.gate, {
+    actionId: 'open-admit', actorRef: 'fixture:human-1',
+    verb: 'OPEN', detectionRef: detection.receiptId,
+  });
+  const bundle = buildTransferBundle(f.party, offer, f);
+  const result = evaluateForeignRoomAdmission(f.destination, offer, bundle);
+  const items = projectAdmittedTransfer(bundle, result);
   assert.ok(items.admitted.some(x => x.ref === 'thread:bell-unresolved'));
   assert.ok(items.refused.some(x => x.ref === 'static-field:charge'));
   assert.ok(items.held.some(x => x.ref === 'static-field:resonance-interpretation'));
@@ -245,11 +250,11 @@ test('Foreign Room decides each item without copying the player blob', () => {
 
 ### Task 5: Explicit human confirmation and scoped party continuity
 
-**Files:** Create src/origin/engine.js and tests/origin-confirmation.test.js.
+**Files:** Create src/origin/engine.js, tests/helpers/origin-sequence.js and tests/origin-confirmation.test.js.
 
 **Interfaces:** createOriginSession(fixture) -> OriginSession; dispatchOriginAction(session, { actionId, actorRef, kind, at }) -> { session, emittedReceipts }. Kinds for this task are DETECT, OPEN, REQUEST_ADMISSION, CONFIRM, CANCEL; later tasks add DEPART, ARRIVE, SEAL. The session owns only container history and copies of separate adapter-local histories.
 
-- [ ] **Step 1: Write failing confirmation tests.**
+- [ ] **Step 1: Write failing confirmation tests.** Create tests/helpers/origin-sequence.js with an exported advanceToAdmittedFixture(initialSession) helper: sequentially dispatch DETECT, OPEN and REQUEST_ADMISSION as fixture:human-1 using fixed distinct IDs and UTC timestamps; return the resulting session. Import that helper, createOriginSession and dispatchOriginAction into the test.
 
 ~~~js
 test('destination admission alone cannot move the party', () => {
@@ -274,11 +279,11 @@ test('model session cannot forge human confirmation', () => {
 
 ### Task 6: Departure, arrival, failures and sealed CrossingReceipt
 
-**Files:** Create src/origin/receipt.js and tests/origin-crossing.test.js; extend src/origin/engine.js and src/origin/world-adapters.js.
+**Files:** Create src/origin/receipt.js and tests/origin-crossing.test.js; extend src/origin/engine.js, src/origin/world-adapters.js and tests/helpers/origin-sequence.js.
 
 **Interfaces:** dispatchOriginAction adds DEPART, ARRIVE, SEAL and RECOVER; buildCrossingReceipt(session) -> bounded receipt; verifyCrossingReceipt(receipt, session) -> { valid, errors }; projectWorldline(session) -> chronological Crossing refs only.
 
-- [ ] **Step 1: Write failing end-to-end and interruption tests.**
+- [ ] **Step 1: Write failing end-to-end and interruption tests.** Extend tests/helpers/origin-sequence.js with advanceThroughDeparture(initialSession), which calls advanceToAdmittedFixture, then dispatches CONFIRM and DEPART with distinct fixed IDs; also add completeFirstCrossingFixture() which starts from createOriginSession(createFirstCrossingFixture()), dispatches the first five actions then ARRIVE and SEAL, and returns the resulting session. Import those helpers into this test and Task 7's test.
 
 ~~~js
 test('crossing requires both local receipts and preserves Bell uncertainty', () => {
@@ -297,10 +302,16 @@ test('crossing requires both local receipts and preserves Bell uncertainty', () 
 });
 test('interrupted arrival has no success receipt and retry does not duplicate departure', () => {
   const s = advanceThroughDeparture(createOriginSession(createFirstCrossingFixture()));
-  const interrupted = simulateArrivalFailure(s, 'fixture:transport-error');
+  const interrupted = dispatchOriginAction(s, {
+    actionId: 'arrive-fail', actorRef: 'fixture:human-1',
+    kind: 'ARRIVE', at: '2026-09-21T14:12:00.000Z',
+  }, { arriveForeignRoom: () => { throw new Error('fixture:transport-error'); } }).session;
   assert.equal(interrupted.crossingStatus, 'FAILED');
   assert.equal(interrupted.containerEvents.some(e => e.kind === 'crossing.sealed'), false);
-  const recovered = recoverForeignRoomArrival(interrupted, 'recover-1');
+  const recovered = dispatchOriginAction(interrupted, {
+    actionId: 'recover-1', actorRef: 'fixture:human-1',
+    kind: 'RECOVER', at: '2026-09-21T14:13:00.000Z',
+  }).session;
   assert.equal(recovered.source.localEvents.filter(e => e.kind === 'porch.departed').length, 1);
   assert.equal(recovered.destination.localEvents.filter(e => e.kind === 'party.arrived').length, 1);
 });
@@ -308,7 +319,7 @@ test('interrupted arrival has no success receipt and retry does not duplicate de
 
 - [ ] **Step 2: Run RED.** Run node --test tests/origin-crossing.test.js. Expected: Crossing receipt/recovery missing.
 - [ ] **Step 3: Implement staged crossing.** DEPART requires confirmed admission; records source-local departure once. ARRIVE requires source departure and destination admission; records destination-local arrival once and updates party world location only after destination receipt exists. SEAL requires both receipts and the exact transfer manifest. The container stores refs/status, not full source/destination history as authoritative facts.
-- [ ] **Step 4: Implement explicit incomplete outcomes.** Destination refusal -> REFUSED without source departure; unresolved admission -> HELD; transport exception after departure -> FAILED with departure ref retained. RECOVER may retry arrival only against the identical admitted bundle, destination and confirmation; it must not backdate, erase or reissue departure. CANCEL is invalid after departure. PARTIAL must list exact members/items that crossed.
+- [ ] **Step 4: Implement explicit incomplete outcomes.** Destination refusal -> REFUSED without source departure; unresolved admission -> HELD; an ARRIVE exception from optional injected { arriveForeignRoom } adapter -> FAILED with departure ref retained (the fixture's error is a recorded failure, not thrown past the coordinator). The production default uses the destination-local arriveForeignRoom function; the injection exists only for deterministic failure testing. RECOVER may retry arrival only against the identical admitted bundle, destination and confirmation; it must not backdate, erase or reissue departure. CANCEL is invalid after departure. PARTIAL must list exact members/items that crossed.
 - [ ] **Step 5: Seal bounded receipt and worldline.** Include all eight named receipt categories, per-item ADMIT/REFUSE/HOLD/TRANSFORM, unchanged party Anchor, prior crossing ref, evidence scope and non-claims. Hash canonical receipt body. verifyCrossingReceipt rejects missing/mismatched local receipt refs, absent confirmation, duplicate item disposition, or changed party ID. No unspecified semantic proof is claimed by hash validity.
 - [ ] **Step 6: Run GREEN/regression and commit.** Run node --test tests/origin-crossing.test.js && npm test. Commit: feat(origin): seal first sovereign crossing and recovery.
 
@@ -318,11 +329,11 @@ test('interrupted arrival has no success receipt and retry does not duplicate de
 
 **Interfaces:** serializeOriginSession(session) -> JSON string; parseOriginSession(json) -> validated session or throws; replayOriginSession(session) -> detached source, destination, party, container projections.
 
-- [ ] **Step 1: Write failing round-trip and corrupt-data tests.**
+- [ ] **Step 1: Write failing round-trip and corrupt-data tests.** Import completeFirstCrossingFixture from tests/helpers/origin-sequence.js, plus the new storage exports. This uses the Task 6 helper, not the Task 9 specimen runner.
 
 ~~~js
 test('reload preserves worlds separately and does not replay the knock', () => {
-  const complete = runFirstCrossingFixture().session;
+  const complete = completeFirstCrossingFixture();
   const restored = parseOriginSession(serializeOriginSession(complete));
   assert.deepEqual(replayOriginSession(restored), replayOriginSession(complete));
   assert.equal(restored.source.localEvents.filter(e => e.kind === 'knock.heard').length, 1);
@@ -336,7 +347,7 @@ test('corrupt Origin history fails visibly and never resets the writer world', (
 ~~~
 
 - [ ] **Step 2: Run RED.** Run node --test tests/origin-persistence.test.js. Expected: storage module missing.
-- [ ] **Step 3: Implement versioned detached serialization.** Use origin/0.1 schema with separate source/destination local histories, container history and minimal party projection. Validate unique IDs, valid references, event hashes, completed crossing receipt linkage and per-item transfer dispositions before returning restored state. On malformed data throw explicit errors; do not silently create a fresh world.
+- [ ] **Step 3: Implement versioned detached serialization.** Use origin/0.1 schema with separate source/destination local histories, container history and minimal party projection. Import/reuse the portable hashRecord implementation from Task 1; never import node:crypto into browser-reachable production code. Validate unique IDs, valid references, event hashes, completed crossing receipt linkage and per-item transfer dispositions before returning restored state. On malformed data throw explicit errors; do not silently create a fresh world.
 - [ ] **Step 4: Add immutability/replay tests.** Mutating an exported session object cannot mutate original; same session serialized twice is byte-identical; no replay creates fresh Bell, Knock, meal or arrival; no WORLDSEED createWorld/parseWorld or writer localStorage key is used.
 - [ ] **Step 5: Run GREEN and commit.** Run node --test tests/origin-persistence.test.js && npm test. Commit: feat(origin): resume a crossing without rewriting worlds.
 
